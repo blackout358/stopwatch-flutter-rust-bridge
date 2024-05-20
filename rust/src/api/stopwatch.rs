@@ -42,6 +42,46 @@ impl StopwatchRemote {
         }
     }
 
+    pub fn tick(&self, sink: StreamSink<i32>) -> Result<()> {
+        let mut count = 0;
+        // self.timer.tick(sink)
+        let time_receiver = self.timer.stopwatch_to_remote.receiver.clone();
+        loop {
+            let _ = match time_receiver.try_recv() {
+                Ok(message) => {
+                    println!("{}", message);
+                    sink.add(message.parse().unwrap())
+                }
+                Err(_) => sink.add(-1),
+            };
+            // count = count + 1;
+            // sink.add(count);
+            thread::sleep(Duration::from_millis(300))
+        }
+    }
+
+    // pub fn tick(&self, sink: StreamSink<i32>) -> Result<()> {
+    //     // timer.stop_watch.start();
+    //     // self.stop_watch.start();
+
+    //     let time_receiver = self.stopwatch_to_remote.receiver.clone();
+    //     loop {
+    //         let _ = match time_receiver.try_recv() {
+    //             Ok(message) => {
+    //                 println!("{}", message);
+    //                 sink.add(message.parse().unwrap())
+    //             }
+    //             Err(_) => sink.add(1),
+    //         };
+    //         // println!("TIME: {:?}", result);
+    //     }
+    //     Ok(())
+    // }
+
+    pub fn stop_timer(&self) {
+        self.timer.stop_timer();
+    }
+
     pub fn start_timer(&self) {
         self.timer.start_timer();
     }
@@ -82,6 +122,7 @@ impl Timer {
 
         let _stopwatch_thread = thread::spawn(move || {
             let mut new_stopwatch = Stopwatch::new();
+
             // new_stopwatch.start();
             loop {
                 // let mut watch = new_stopwatch.clone();
@@ -93,6 +134,10 @@ impl Timer {
                             println!("Start timer");
                             &new_stopwatch.start();
                         }
+                        "stop" => {
+                            println!("Stop timer");
+                            &new_stopwatch.stop();
+                        }
                         _ => {
                             println!("Doesnt match: {}", message);
                         }
@@ -101,9 +146,9 @@ impl Timer {
                     Err(crossbeam::channel::TryRecvError::Disconnected) => println!("Disconneced"),
                 };
                 let time = &new_stopwatch.elapsed_ms() / 1000;
-                let res = stopwatch_sender.send(time.to_string());
-                println!("Time elapsed: {}\nResult: {:?}\n", time, res);
-                thread::sleep(Duration::from_secs(1));
+                let _res = stopwatch_sender.send(time.to_string());
+                println!("Time elapsed: {}\n", time);
+                thread::sleep(Duration::from_millis(300));
                 // new_stopwatch.start();
             }
         });
@@ -114,17 +159,17 @@ impl Timer {
     // #[frb(sync)]
     pub fn start_timer(&self) {
         let remote_sender = self.remote_to_stopwatch.sender.clone();
-
-        // let _ = remote_sender.send(format!("Messag was sent")).unwrap();
-        let result = remote_sender.send(format!("start"));
+        let _result = remote_sender.send(format!("start"));
     }
 
     // pub fn
 
-    pub fn stop_timer(&mut self) {
-        let _guard = self.mutex.lock().unwrap();
+    pub fn stop_timer(&self) {
         // *self.running.lock().unwrap() = false;
-        self.stop_watch.stop();
+        let remote_sender = self.remote_to_stopwatch.sender.clone();
+
+        // let _ = remote_sender.send(format!("Messag was sent")).unwrap();
+        let _result = remote_sender.send(format!("stop"));
     }
 
     #[frb(sync)]
@@ -148,7 +193,7 @@ impl Timer {
             };
             // println!("TIME: {:?}", result);
         }
-        Ok(())
+        // Ok(())
     }
 
     pub fn get_time_elapsed(&self) -> i32 {

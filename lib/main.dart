@@ -79,14 +79,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
             ElevatedButton(
                 onPressed: () {
+                  remote.stopTimer();
                   // startTimer(timer: stopwatchTimer);
                   // print(stopwatchTimer.returnSomething());
                   // setState(() {
                   //   timerMutex = !timerMutex;
                   // });
-                  setState(() {
-                    timerMutex = !timerMutex;
-                  });
+                  // setState(() {
+                  //   timerMutex = !timerMutex;
+                  // });
                   // stopwatchTimer.stopTimer();
                 },
                 child: Container(
@@ -114,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Builder(builder: (BuildContext context) {
               // return Text("Even more busy");
               return StreamBuilder<int>(
-                stream: null,
+                stream: remote.tick(),
                 builder: (context, snap) {
                   final style = Theme.of(context).textTheme.headlineMedium;
                   final error = snap.error;

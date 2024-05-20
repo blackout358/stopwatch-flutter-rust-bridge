@@ -39,6 +39,12 @@ class StopwatchRemote extends RustOpaque {
 
   Future<void> startTimer({dynamic hint}) =>
       RustLib.instance.api.stopwatchRemoteStartTimer(that: this, hint: hint);
+
+  Future<void> stopTimer({dynamic hint}) =>
+      RustLib.instance.api.stopwatchRemoteStopTimer(that: this, hint: hint);
+
+  Stream<int> tick({dynamic hint}) =>
+      RustLib.instance.api.stopwatchRemoteTick(that: this, hint: hint);
 }
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::rust_async::RwLock<Timer>>
