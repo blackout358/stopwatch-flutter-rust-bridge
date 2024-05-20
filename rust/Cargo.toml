@@ -1,0 +1,16 @@
+[package]
+name = "rust_lib_stopwatch"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+anyhow = "1.0.83"
+async-lock = "3.3.0"
+flutter_rust_bridge = "=2.0.0-dev.32"
+stopwatch = "0.0.7"
+tokio = "1.37.0"
+bytestream = "0.4"
+crossbeam = "0.8.4"
