@@ -32,7 +32,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final Timer stopwatchTimer = Timer();
+  // final Timer stopwatchTimer = Timer();
+  final StopwatchRemote remote = StopwatchRemote();
   bool timerMutex = false;
   // stopwatchTimer
   // final
@@ -69,10 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // setState(() {
                   //   timerMutex = !timerMutex;
                   // });
-                  stopwatchTimer.startTimer();
-                  setState(() {
-                    timerMutex = !timerMutex;
-                  });
+                  remote.startTimer();
                 },
                 child: Container(
                   color: Colors.amber,
@@ -89,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   setState(() {
                     timerMutex = !timerMutex;
                   });
-                  stopwatchTimer.stopTimer();
+                  // stopwatchTimer.stopTimer();
                 },
                 child: Container(
                   color: Colors.amber,
@@ -116,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Builder(builder: (BuildContext context) {
               // return Text("Even more busy");
               return StreamBuilder<int>(
-                stream: timerMutex == false ? null : stopwatchTimer.tick(),
+                stream: null,
                 builder: (context, snap) {
                   final style = Theme.of(context).textTheme.headlineMedium;
                   final error = snap.error;

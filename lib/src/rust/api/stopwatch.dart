@@ -16,6 +16,31 @@ Stream<int> tick({required Timer timer, dynamic hint}) =>
 
 Stream<int> regTick({dynamic hint}) => RustLib.instance.api.regTick(hint: hint);
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::rust_async::RwLock<StopwatchRemote>>
+@sealed
+class StopwatchRemote extends RustOpaque {
+  StopwatchRemote.dcoDecode(List<dynamic> wire)
+      : super.dcoDecode(wire, _kStaticData);
+
+  StopwatchRemote.sseDecode(int ptr, int externalSizeOnNative)
+      : super.sseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_StopwatchRemote,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_StopwatchRemote,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_StopwatchRemotePtr,
+  );
+
+  factory StopwatchRemote({dynamic hint}) =>
+      RustLib.instance.api.stopwatchRemoteNew(hint: hint);
+
+  Future<void> startTimer({dynamic hint}) =>
+      RustLib.instance.api.stopwatchRemoteStartTimer(that: this, hint: hint);
+}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::rust_async::RwLock<Timer>>
 @sealed
 class Timer extends RustOpaque {
@@ -52,28 +77,4 @@ class Timer extends RustOpaque {
 
   Stream<int> tick({dynamic hint}) =>
       RustLib.instance.api.timerTick(that: this, hint: hint);
-}
-
-class StopwatchRemote {
-  final Timer timer;
-
-  const StopwatchRemote.raw({
-    required this.timer,
-  });
-
-  factory StopwatchRemote({dynamic hint}) =>
-      RustLib.instance.api.stopwatchRemoteNew(hint: hint);
-
-  Future<void> startTimer({dynamic hint}) =>
-      RustLib.instance.api.stopwatchRemoteStartTimer(that: this, hint: hint);
-
-  @override
-  int get hashCode => timer.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is StopwatchRemote &&
-          runtimeType == other.runtimeType &&
-          timer == other.timer;
 }

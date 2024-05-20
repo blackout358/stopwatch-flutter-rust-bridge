@@ -3,16 +3,17 @@ use anyhow::Result;
 use flutter_rust_bridge::frb;
 use std::cell::RefCell;
 use std::fmt::format;
+use std::ops::Deref;
 use std::sync::{Arc, Mutex};
-use std::thread;
+use std::{string, thread};
 use std::{thread::sleep, time::Duration};
 use stopwatch::Stopwatch;
 extern crate stopwatch;
 use async_lock::Semaphore;
 const ONE_SECOND: Duration = Duration::from_secs(1);
 use bytestream::*;
-use crossbeam::channel::{bounded, Receiver, Sender};
-use std::io::{Cursor, Read, Result as IOResult, Write};
+use crossbeam::channel::{bounded, unbounded, Receiver, Sender};
+use std::io::{Cursor, Empty, Read, Result as IOResult, Write};
 use std::sync::mpsc;
 
 /*
@@ -28,7 +29,7 @@ send stopwatch signal to do x y z.
 
 // const s = Semaphore::new(1);
 // #[derive(Debug)]
-#[frb(non_opaque)]
+#[frb(opaque)]
 pub struct StopwatchRemote {
     pub timer: Timer,
 }
@@ -79,28 +80,43 @@ impl Timer {
         let stopwatch_sender = self.stopwatch_to_remote.sender.clone();
         // let remote_receiver = self.
 
-        let stopwatch_thread = thread::spawn(move || {
-            let new_stopwatch = Stopwatch::new();
-
+        let _stopwatch_thread = thread::spawn(move || {
+            let mut new_stopwatch = Stopwatch::new();
+            // new_stopwatch.start();
             loop {
+                // let mut watch = new_stopwatch.clone();
+                // let temp = stopwatch_receiver.try_recv();
+                println!("{}", new_stopwatch);
                 match stopwatch_receiver.try_recv() {
-                    Ok(message) => println!("Message: {}", message),
+                    Ok(message) => match message.as_str() {
+                        "start" => {
+                            println!("Start timer");
+                            &new_stopwatch.start();
+                        }
+                        _ => {
+                            println!("Doesnt match: {}", message);
+                        }
+                    },
                     Err(crossbeam::channel::TryRecvError::Empty) => println!("Nothing received"),
-                    Err(crossbeam::channel::TryRecvError::Disconnected) => println!("Disconnected"),
-                }
-
-                let _ = stopwatch_sender.send((new_stopwatch.elapsed_ms() / 1000).to_string());
+                    Err(crossbeam::channel::TryRecvError::Disconnected) => println!("Disconneced"),
+                };
+                let time = &new_stopwatch.elapsed_ms() / 1000;
+                let res = stopwatch_sender.send(time.to_string());
+                println!("Time elapsed: {}\nResult: {:?}\n", time, res);
                 thread::sleep(Duration::from_secs(1));
+                // new_stopwatch.start();
             }
         });
 
-        stopwatch_thread.join().unwrap();
+        // stopwatch_thread.join().unwrap();
     }
 
     // #[frb(sync)]
     pub fn start_timer(&self) {
         let remote_sender = self.remote_to_stopwatch.sender.clone();
-        let _ = remote_sender.send(format!("Messag was sent"));
+
+        // let _ = remote_sender.send(format!("Messag was sent")).unwrap();
+        let result = remote_sender.send(format!("start"));
     }
 
     // pub fn
@@ -117,16 +133,19 @@ impl Timer {
         "Heyy from rust".to_string()
     }
 
-    pub fn tick(self, sink: StreamSink<i32>) -> Result<()> {
+    pub fn tick(&self, sink: StreamSink<i32>) -> Result<()> {
         // timer.stop_watch.start();
         // self.stop_watch.start();
 
+        let time_receiver = self.stopwatch_to_remote.receiver.clone();
         loop {
-            let value_to_add = { Self::get_time_elapsed(&self) };
-
-            let _ = sink.add(value_to_add);
-            sleep(ONE_SECOND);
-
+            let _ = match time_receiver.try_recv() {
+                Ok(message) => {
+                    println!("{}", message);
+                    sink.add(message.parse().unwrap())
+                }
+                Err(_) => sink.add(1),
+            };
             // println!("TIME: {:?}", result);
         }
         Ok(())
@@ -165,7 +184,7 @@ pub struct ChannelPair {
 
 impl ChannelPair {
     fn new() -> Self {
-        let (sender, receiver) = bounded(100); // Bounded channel with a capacity of 100
+        let (sender, receiver) = unbounded(); // Bounded channel with a capacity of 100
         ChannelPair { sender, receiver }
     }
 }
