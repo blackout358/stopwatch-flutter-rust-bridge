@@ -96,22 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // child: Text(stopwatchTimer.name),
                 )),
             const Text("Time since starting Rust stream"),
-            StreamBuilder<int>(
-              stream: regTick(),
-              builder: (context, snap) {
-                final style = Theme.of(context).textTheme.headlineMedium;
-                final error = snap.error;
-                if (error != null)
-                  return Tooltip(
-                      message: error.toString(),
-                      child: Text('Error', style: style));
 
-                final data = snap.data;
-                if (data != null) return Text('$data second(s)', style: style);
-
-                return const CircularProgressIndicator();
-              },
-            ),
             Builder(builder: (BuildContext context) {
               // return Text("Even more busy");
               return StreamBuilder<int>(

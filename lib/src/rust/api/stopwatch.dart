@@ -7,12 +7,7 @@ import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // The type `ChannelPair` is not used by any `pub` functions, thus it is ignored.
-
-void startTimer({required Timer timer, dynamic hint}) =>
-    RustLib.instance.api.startTimer(timer: timer, hint: hint);
-
-Stream<int> tick({required Timer timer, dynamic hint}) =>
-    RustLib.instance.api.tick(timer: timer, hint: hint);
+// The type `RemoteControl` is not used by any `pub` functions, thus it is ignored.
 
 Stream<int> regTick({dynamic hint}) => RustLib.instance.api.regTick(hint: hint);
 
@@ -64,23 +59,14 @@ class Timer extends RustOpaque {
         RustLib.instance.api.rust_arc_decrement_strong_count_TimerPtr,
   );
 
-  Future<int> getTimeElapsed({dynamic hint}) =>
-      RustLib.instance.api.timerGetTimeElapsed(that: this, hint: hint);
-
   factory Timer({dynamic hint}) => RustLib.instance.api.timerNew(hint: hint);
 
   String returnSomething({dynamic hint}) =>
       RustLib.instance.api.timerReturnSomething(that: this, hint: hint);
-
-  Stream<int> sendOff({dynamic hint}) =>
-      RustLib.instance.api.timerSendOff(that: this, hint: hint);
 
   Future<void> startTimer({dynamic hint}) =>
       RustLib.instance.api.timerStartTimer(that: this, hint: hint);
 
   Future<void> stopTimer({dynamic hint}) =>
       RustLib.instance.api.timerStopTimer(that: this, hint: hint);
-
-  Stream<int> tick({dynamic hint}) =>
-      RustLib.instance.api.timerTick(that: this, hint: hint);
 }
