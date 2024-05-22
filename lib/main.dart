@@ -63,38 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-                onPressed: () {
-                  // startTimer(timer: stopwatchTimer);
-                  // print(stopwatchTimer.returnSomething());
-                  // setState(() {
-                  //   timerMutex = !timerMutex;
-                  // });
-                  remote.startTimer();
-                },
-                child: Container(
-                  color: Colors.amber,
-                  child: Text("Start"),
-                  // child: Text(stopwatchTimer.name),
-                )),
-            ElevatedButton(
-                onPressed: () {
-                  remote.stopTimer();
-                  // startTimer(timer: stopwatchTimer);
-                  // print(stopwatchTimer.returnSomething());
-                  // setState(() {
-                  //   timerMutex = !timerMutex;
-                  // });
-                  // setState(() {
-                  //   timerMutex = !timerMutex;
-                  // });
-                  // stopwatchTimer.stopTimer();
-                },
-                child: Container(
-                  color: Colors.amber,
-                  child: Text("Stop"),
-                  // child: Text(stopwatchTimer.name),
-                )),
             const Text("Time since starting Rust stream"),
 
             Builder(builder: (BuildContext context) {
@@ -117,6 +85,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               );
             }),
+            SizedBox(
+              height: 25,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      remote.startTimer();
+                    },
+                    child: Container(
+                      // color: Colors.amber,rr
+                      child: Text("Start"),
+                      // child: Text(stopwatchTimer.name),
+                    )),
+                SizedBox(
+                  width: 25,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      remote.stopTimer();
+                    },
+                    child: Container(
+                      // color: Colors.amber,
+                      child: Text("Stop"),
+                      // child: Text(stopwatchTimer.name),
+                    )),
+              ],
+            ),
             // StreamBuilder<int>(
             //   stream: tick(timer: stopwatchTimer),
             //   builder: (context, snap) {

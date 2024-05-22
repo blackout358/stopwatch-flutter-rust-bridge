@@ -78,25 +78,17 @@ impl Timer {
             remote_to_stopwatch: ChannelPair::new(),
             stopwatch_to_remote: ChannelPair::new(),
         };
-        Self::main(&obj);
+        // Self::main(&obj);
 
         obj
     }
 
     fn main(&self) {
-        // let remote_sender = self.remote_to_stopwatch.sender.clone();
         let stopwatch_receiver = self.remote_to_stopwatch.receiver.clone();
         let stopwatch_sender = self.stopwatch_to_remote.sender.clone();
-        // let remote_receiver = self.
-
         let _stopwatch_thread = thread::spawn(move || {
             let mut new_stopwatch = Stopwatch::new();
-
-            // new_stopwatch.start();
             loop {
-                // let mut watch = new_stopwatch.clone();
-                // let temp = stopwatch_receiver.try_recv();
-                // println!("{}", new_stopwatch);
                 match stopwatch_receiver.try_recv() {
                     Ok(message) => match message {
                         RemoteControl::Start => {
@@ -118,20 +110,14 @@ impl Timer {
                 let _res = stopwatch_sender.send(RemoteControl::Time(time.to_string()));
                 println!("Time elapsed: {}\n", time);
                 thread::sleep(SLEEP_TIME);
-                // new_stopwatch.start();
             }
         });
-
-        // stopwatch_thread.join().unwrap();
     }
 
-    // #[frb(sync)]
     pub fn start_timer(&self) {
         let remote_sender = self.remote_to_stopwatch.sender.clone();
         let _result = remote_sender.send(RemoteControl::Start);
     }
-
-    // pub fn
 
     pub fn stop_timer(&self) {
         let remote_sender = self.remote_to_stopwatch.sender.clone();
@@ -153,7 +139,7 @@ pub struct ChannelPair {
 
 impl ChannelPair {
     fn new() -> Self {
-        let (sender, receiver) = unbounded(); // Bounded channel with a capacity of 100
+        let (sender, receiver) = unbounded();
         ChannelPair { sender, receiver }
     }
 }
