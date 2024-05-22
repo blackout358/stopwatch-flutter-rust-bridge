@@ -48,7 +48,11 @@ impl StopwatchRemote {
                 Ok(message) => match message {
                     RemoteControl::Start => todo!(),
                     RemoteControl::Stop => todo!(),
-                    RemoteControl::Time(data) => sink.add(data.parse().unwrap()),
+                    RemoteControl::Time(data) => {
+                        let mut parsed_data: i32 = data.parse().unwrap();
+                        // println!("{}", &parsed_data / 10 * 10);
+                        sink.add(parsed_data)
+                    }
                 },
                 Err(_) => sink.add(-1),
             };
@@ -78,7 +82,7 @@ impl Timer {
             remote_to_stopwatch: ChannelPair::new(),
             stopwatch_to_remote: ChannelPair::new(),
         };
-        // Self::main(&obj);
+        Self::main(&obj);
 
         obj
     }
