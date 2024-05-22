@@ -32,25 +32,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // final Timer stopwatchTimer = Timer();
   final StopwatchRemote remote = StopwatchRemote();
-  bool timerMutex = false;
-  // stopwatchTimer
-  // final
-
-  // late MyTimer timer;
-  // late Stream<int> timer;
-
   @override
   void initState() {
     super.initState();
-    // stopwatchTimer = MyTimer();
-    // stopwatchTimer.startTimer();
-    // startTimer(declaredTimer: stopwatchTimer);
-    // stopwatchTimer.startTimer();
-    // timer = MyTimer.newInstance() as MyTimer;
-
-    // timer = Timer.newInstance();
   }
 
   @override
@@ -64,22 +49,40 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text("Time since starting Rust stream"),
-
             Builder(builder: (BuildContext context) {
-              // return Text("Even more busy");
               return StreamBuilder<int>(
                 stream: remote.tick(),
                 builder: (context, snap) {
+                  final data = snap.data;
                   final style = Theme.of(context).textTheme.headlineMedium;
                   final error = snap.error;
+
+                  Duration dur = data != null
+                      ? Duration(milliseconds: data)
+                      : Duration(hours: 0);
+
+                  int hours = dur.inHours;
+                  int minutes = dur.inMinutes.remainder(60);
+                  int seconds = dur.inSeconds.remainder(60);
+                  int millis = dur.inMilliseconds.remainder(1000);
+
+                  String formattedTime = "${hours.toString().padLeft(2, '0')}:"
+                      "${minutes.toString().padLeft(2, '0')}:"
+                      "${seconds.toString().padLeft(2, '0')}.";
+                  if (millis < 100) {
+                    formattedTime += "0";
+                  }
+                  if (millis < 10) {
+                    formattedTime += "0";
+                  }
+                  formattedTime += millis.toString();
+
                   if (error != null)
                     return Tooltip(
                         message: error.toString(),
                         child: Text('Error', style: style));
 
-                  final data = snap.data;
-                  if (data != null)
-                    return Text('$data second(s)', style: style);
+                  if (data != null) return Text(formattedTime, style: style);
 
                   return Text('$data second(s)', style: style);
                 },
@@ -96,9 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       remote.startTimer();
                     },
                     child: Container(
-                      // color: Colors.amber,rr
                       child: Text("Start"),
-                      // child: Text(stopwatchTimer.name),
                     )),
                 SizedBox(
                   width: 25,
@@ -108,28 +109,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       remote.stopTimer();
                     },
                     child: Container(
-                      // color: Colors.amber,
                       child: Text("Stop"),
-                      // child: Text(stopwatchTimer.name),
                     )),
               ],
             ),
-            // StreamBuilder<int>(
-            //   stream: tick(timer: stopwatchTimer),
-            //   builder: (context, snap) {
-            //     final style = Theme.of(context).textTheme.headlineMedium;
-            //     final error = snap.error;
-            //     if (error != null)
-            //       return Tooltip(
-            //           message: error.toString(),
-            //           child: Text('Error', style: style));
-
-            //     final data = snap.data;
-            //     if (data != null) return Text('$data second(s)', style: style);
-
-            //     return const CircularProgressIndicator();
-            //   },
-            // )
           ],
         ),
       ),
